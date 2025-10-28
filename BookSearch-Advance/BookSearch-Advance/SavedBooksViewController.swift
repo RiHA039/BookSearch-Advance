@@ -13,5 +13,6 @@ class SavedBooksViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         title = "담은 책 리스트" // 네비게이션 상단 제목
+        
     }
 }
