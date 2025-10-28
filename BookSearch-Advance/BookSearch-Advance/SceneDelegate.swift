@@ -20,10 +20,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
 
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = UIViewController()
+        window?.rootViewController = createTabBarController()
         window?.makeKeyAndVisible()
     }
 
+    // 탭바 컨트롤러 생성 함수
+    private func createTabBarController() -> UITabBarController {
+        let tabBarController = UITabBarController()
+        
+        // 첫 번째 탭: 책 검색 화면
+        let searchVC = UINavigationController(rootViewController: BookSearchViewController())
+        searchVC.tabBarItem = UITabBarItem(title: "검색", image: UIImage(systemName: "magnifyingglass"), tag: 0)
+        
+        // 두 번째 탭: 담은 책 리스트 화면/ 장바구니(?)
+        let savedVC = UINavigationController(rootViewController: SavedBooksViewController())
+        savedVC.tabBarItem = UITabBarItem(title: "담은 책", image: UIImage(systemName: "book"), tag: 1)
+        
+        // 두 개의 탭, 탭바 컨트롤러에 추가
+        tabBarController.viewControllers = [searchVC, savedVC]
+        return tabBarController
+    }
 
 
     func sceneDidDisconnect(_ scene: UIScene) {
