@@ -31,6 +31,10 @@ class BookSearchViewController: UIViewController {
         
         setupLayout()
         
+        //
+        tableView.dataSource = self
+        tableView.delegate = self
+        
     }
     
     // 오토레이아웃 설정
@@ -50,27 +54,35 @@ class BookSearchViewController: UIViewController {
         }
     }
     
-    // 테이블 뷰 설정
-    private func setupTableView() {
-        tableView.dataSource = self
-        tableView.delegate = self
-    }
 }
 
 // 테이블 뷰 데이터 설정 (추후 변경 예정)
 extension BookSearchViewController: UITableViewDataSource, UITableViewDelegate {
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+    // 임시로 넣은 데이터
+    private var dummyBooks: [String] {
+        return ["해리포터", "어려워용", "힘내보자"]
     }
     
+    // 섹션 당 셀 개수
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return dummyBooks.count
+    }
+    
+    // 셀 내용 구성
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "BookCell", for: indexPath)
+        cell.textLabel?.text = dummyBooks[indexPath.row] // 첵 제목 표시
         return cell
     }
     
+    // 셀 탭 시 동작(책 상세 화면 모달로 띄우기)
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        let detaiVC = BookDetailViewController()
+        detaiVC.modalPresentationStyle = .pageSheet // 아래에서 위로 올라오는 시트형 모달
+        present(detaiVC, animated: true)
     }
 }
 
