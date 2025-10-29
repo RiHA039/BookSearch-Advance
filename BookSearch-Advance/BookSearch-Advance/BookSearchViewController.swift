@@ -4,6 +4,7 @@
 //
 //  Created by 김리하 on 10/28/25.
 //
+
 import UIKit
 import SnapKit
 
@@ -24,26 +25,42 @@ class BookSearchViewController: UIViewController {
         return tableView
     }()
     
+    private var searchResults: [String] = []
+    
+    private let allBooks = [
+        "해리포터",
+        "해리포터2",
+        "해리포터3",
+        "해리포터4"
+    ]
+    
+   
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         title = "검색" // 네비게이션 상단 제목
         
         setupLayout()
-        
-        //
-        tableView.dataSource = self
-        tableView.delegate = self
+        setupDelegate()
         
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        searchBar.delegate = self
+    }
+    
     
     // 오토레이아웃 설정
     private func setupLayout() {
         view.addSubview(searchBar)
         view.addSubview(tableView)
         
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        
         searchBar.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(44)
         }
@@ -54,25 +71,44 @@ class BookSearchViewController: UIViewController {
         }
     }
     
+    private func setupDelegate() {
+        tableView.dataSource = self
+        tableView.delegate = self
+        
+    }
+    
 }
+
+// UISearchBarDelegate (검색 기능)
+extension BookSearchViewController: UISearchBarDelegate {
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        print("✅ searchBarTextDidEndEditing 실행됨")
+        guard let keyword = searchBar.text?.lowercased(), !keyword.isEmpty else { return }
+        
+        searchResults = allBooks.filter { $0.lowercased().contains(keyword) }
+        print("검색 결과:", searchResults)
+        
+        tableView.reloadData()
+        searchBar.resignFirstResponder() // 키보드 내리기
+        
+    }
+}
+
+
 
 // 테이블 뷰 데이터 설정 (추후 변경 예정)
 extension BookSearchViewController: UITableViewDataSource, UITableViewDelegate {
     
-    // 임시로 넣은 데이터
-    private var dummyBooks: [String] {
-        return ["해리포터", "어려워용", "힘내보자"]
-    }
     
     // 섹션 당 셀 개수
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dummyBooks.count
+        return searchResults.count
     }
     
     // 셀 내용 구성
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "BookCell", for: indexPath)
-        cell.textLabel?.text = dummyBooks[indexPath.row] // 첵 제목 표시
+        cell.textLabel?.text = searchResults[indexPath.row] // 첵 제목 표시
         return cell
     }
     
@@ -80,11 +116,12 @@ extension BookSearchViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let selectedBook = Book(title: dummyBooks[indexPath.row], description: "테스트용 설명")
+        let selectedTitle = searchResults[indexPath.row]
         let detaiVC = BookDetailViewController()
-        detaiVC.book = selectedBook
+        detaiVC.book = Book(title: selectedTitle, description: "검색 결과 예시 설명")
         detaiVC.modalPresentationStyle = .pageSheet // 아래에서 위로 올라오는 시트형 모달
         present(detaiVC, animated: true)
     }
 }
+
 
