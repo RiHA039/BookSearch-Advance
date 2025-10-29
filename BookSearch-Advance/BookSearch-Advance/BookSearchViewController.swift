@@ -80,7 +80,9 @@ extension BookSearchViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
+        let selectedBook = Book(title: dummyBooks[indexPath.row], description: "테스트용 설명")
         let detaiVC = BookDetailViewController()
+        detaiVC.book = selectedBook
         detaiVC.modalPresentationStyle = .pageSheet // 아래에서 위로 올라오는 시트형 모달
         present(detaiVC, animated: true)
     }
