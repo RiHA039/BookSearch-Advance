@@ -18,17 +18,29 @@
 		0CD99AD12EAF915A001B6F3A /* Exceptions for "BookSearch-Advance" folder in "BookSearch-Advance" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				.swift,
 				Info.plist,
 			);
 			target = 0CD99ABE2EAF9159001B6F3A /* BookSearch-Advance */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		0C09A97E2EB1ACC600139C40 /* Exceptions for "BookSearch-Advance" folder in "Compile Sources" phase from "BookSearch-Advance" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 0CD99ABB2EAF9159001B6F3A /* Sources */;
+			membershipExceptions = (
+				.swift,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0CD99AC12EAF9159001B6F3A /* BookSearch-Advance */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				0CD99AD12EAF915A001B6F3A /* Exceptions for "BookSearch-Advance" folder in "BookSearch-Advance" target */,
+				0C09A97E2EB1ACC600139C40 /* Exceptions for "BookSearch-Advance" folder in "Compile Sources" phase from "BookSearch-Advance" target */,
 			);
 			path = "BookSearch-Advance";
 			sourceTree = "<group>";

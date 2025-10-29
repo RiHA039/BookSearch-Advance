@@ -7,12 +7,14 @@
 
 import UIKit
 
+// 앱 전체의 탭 구성을 담당하는 컨트롤러
 class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabs()
     }
     
+    // 각 탭 구성 설정 (검색, 담은 책)
     private func setupTabs() {
         let searchVC = UINavigationController(rootViewController: BookSearchViewController())
         searchVC.tabBarItem = UITabBarItem(title: "검색", image: UIImage(systemName: "magnifyingglass"), tag: 0)
