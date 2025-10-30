@@ -8,10 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		0C32F1B22EB0698100879067 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0C32F1B12EB0698100879067 /* SnapKit */; };
+		0CFBA35A2EB34C69004A50BB /* APIKeys.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0CFBA3592EB34C69004A50BB /* APIKeys.plist */; };
+		0CFBA35C2EB34E35004A50BB /* Secret.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFBA35B2EB34E35004A50BB /* Secret.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0CD99ABF2EAF9159001B6F3A /* BookSearch-Advance.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BookSearch-Advance.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0CFBA3592EB34C69004A50BB /* APIKeys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = APIKeys.plist; sourceTree = "<group>"; };
+		0CFBA35B2EB34E35004A50BB /* Secret.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secret.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -50,6 +54,8 @@
 		0CD99AB62EAF9159001B6F3A = {
 			isa = PBXGroup;
 			children = (
+				0CFBA35B2EB34E35004A50BB /* Secret.swift */,
+				0CFBA3592EB34C69004A50BB /* APIKeys.plist */,
 				0CD99AC12EAF9159001B6F3A /* BookSearch-Advance */,
 				0CD99AC02EAF9159001B6F3A /* Products */,
 			);
@@ -131,6 +137,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0CFBA35A2EB34C69004A50BB /* APIKeys.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,6 +148,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0CFBA35C2EB34E35004A50BB /* Secret.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -36,3 +36,12 @@ fastlane/readme.md
 
 # 기타 macOS 시스템 파일
 .DS_Store
+
+# Xcode 기본 무시 항목
+DerivedData/
+xcuserdata/
+.DS_Store
+
+# 개인 API 키 파일
+APIKeys.plist
+
