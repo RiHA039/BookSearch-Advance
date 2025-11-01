@@ -8,7 +8,13 @@
 import Foundation
 
 // 책 정보를 담는 데이터 모델
+import Foundation
+
 struct Book {
     let title: String
-    let description: String
+    let authors: [String]
+    let contents: String
+    let thumbnail: String?
+    let price: Int?
 }
+
