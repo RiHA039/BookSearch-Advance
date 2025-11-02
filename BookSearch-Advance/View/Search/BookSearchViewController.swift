@@ -4,10 +4,11 @@
 //
 //  Created by 김리하 on 10/28/25.
 //
+
 import UIKit
 import SnapKit
 
-// MARK: - Kakao API 응답 모델
+// MARK: - Kakao API 응답 모델 (그대로 둬도 됨)
 struct KakaoBookResponse: Codable {
     let documents: [BookDocument]
 }
@@ -20,7 +21,7 @@ struct BookDocument: Codable, Equatable {
     let price: Int?
 }
 
-// MARK: - 최근 본 책 셀 (컬렉션뷰 아이템)
+// MARK: - 최근 본 책 셀
 final class RecentBookCell: UICollectionViewCell {
     static let id = "RecentBookCell"
     
@@ -80,14 +81,11 @@ final class RecentBookCell: UICollectionViewCell {
     }
 }
 
-// MARK: - 책 검색 화면
+// MARK: - 책 검색 화면 (MVVM 적용)
 class BookSearchViewController: UIViewController {
     
-    // 최근 본 책 (UserDefaults)
-    private var recentBooks: [Book] = []
-    
-    // 검색 중 여부
-    private var isSearching = false
+    // ViewModel 연결
+    private let viewModel = BookSearchViewModel()
     
     // MARK: - UI 요소
     let searchBar: UISearchBar = {
@@ -102,19 +100,15 @@ class BookSearchViewController: UIViewController {
         return tableView
     }()
     
-    // MARK: - 데이터 저장
-    private var searchResults: [BookDocument] = []   // 검색 결과 리스트
-    
     // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         title = "검색"
         
-        recentBooks = RecentBooksStore.load() // 최근 본 책 불러오기
-        
         setupLayout()
         setupDelegate()
+        bindViewModel()
         
         // 최근 본 책용 셀 등록
         tableView.register(RecentBooksTableCell.self, forCellReuseIdentifier: RecentBooksTableCell.id)
@@ -123,6 +117,14 @@ class BookSearchViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         searchBar.delegate = self
+    }
+    
+    // MARK: - ViewModel 바인딩
+    private func bindViewModel() {
+        // ViewModel의 onUpdate가 호출되면 테이블뷰 리로드
+        viewModel.onUpdate = { [weak self] in
+            self?.tableView.reloadData()
+        }
     }
     
     // MARK: - 오토레이아웃
@@ -148,35 +150,6 @@ class BookSearchViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
     }
-    
-    // MARK: - Kakao API 호출
-    private func fetchBooks(query: String) {
-        let apiKey = Secret.kakaoAPIKey
-        let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? query
-        let urlString = "https://dapi.kakao.com/v3/search/book?query=\(encodedQuery)"
-        guard let url = URL(string: urlString) else { return }
-        
-        var request = URLRequest(url: url)
-        request.setValue("KakaoAK \(apiKey)", forHTTPHeaderField: "Authorization")
-        
-        URLSession.shared.dataTask(with: request) { [weak self] data, _, error in
-            if let error = error {
-                print("네트워크 오류:", error.localizedDescription)
-                return
-            }
-            guard let data = data else { return }
-            
-            do {
-                let decoded = try JSONDecoder().decode(KakaoBookResponse.self, from: data)
-                DispatchQueue.main.async {
-                    self?.searchResults = decoded.documents
-                    self?.tableView.reloadData()
-                }
-            } catch {
-                print("디코딩 오류:", error)
-            }
-        }.resume()
-    }
 }
 
 // MARK: - UISearchBarDelegate
@@ -184,14 +157,12 @@ extension BookSearchViewController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let keyword = searchBar.text, !keyword.isEmpty else { return }
-        isSearching = true
-        fetchBooks(query: keyword)
+        viewModel.searchBooks(query: keyword) // ViewModel에 검색 위임
         searchBar.resignFirstResponder()
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText.isEmpty {
-            isSearching = false
             tableView.reloadData()
         }
     }
@@ -201,26 +172,26 @@ extension BookSearchViewController: UISearchBarDelegate {
 extension BookSearchViewController: UITableViewDataSource, UITableViewDelegate {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return recentBooks.isEmpty ? 1 : 2
+        return viewModel.recentBooks.isEmpty ? 1 : 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if !recentBooks.isEmpty && section == 0 {
-            return 1 // 최근 본 책은 항상 한 줄
+        if !viewModel.recentBooks.isEmpty && section == 0 {
+            return 1
         } else {
-            return searchResults.count
+            return viewModel.books.count
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if !recentBooks.isEmpty && indexPath.section == 0 {
-            return 140 // 최근 본 책 영역 높이
+        if !viewModel.recentBooks.isEmpty && indexPath.section == 0 {
+            return 140
         }
         return 55
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if !recentBooks.isEmpty && indexPath.section == 0 {
+        if !viewModel.recentBooks.isEmpty && indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: RecentBooksTableCell.id, for: indexPath) as! RecentBooksTableCell
             cell.collectionView.dataSource = self
             cell.collectionView.delegate = self
@@ -229,7 +200,7 @@ extension BookSearchViewController: UITableViewDataSource, UITableViewDelegate {
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "BookCell", for: indexPath)
-            let book = searchResults[indexPath.row]
+            let book = viewModel.books[indexPath.row]
             cell.textLabel?.text = book.title
                 .replacingOccurrences(of: "<b>", with: "")
                 .replacingOccurrences(of: "</b>", with: "")
@@ -241,10 +212,10 @@ extension BookSearchViewController: UITableViewDataSource, UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         
         let selectedBook: Book
-        if !recentBooks.isEmpty && indexPath.section == 0 {
-            selectedBook = recentBooks[indexPath.row]
+        if !viewModel.recentBooks.isEmpty && indexPath.section == 0 {
+            selectedBook = viewModel.recentBooks[indexPath.row]
         } else {
-            let item = searchResults[indexPath.row]
+            let item = viewModel.books[indexPath.row]
             selectedBook = Book(
                 title: item.title.replacingOccurrences(of: "<b>", with: "").replacingOccurrences(of: "</b>", with: ""),
                 authors: item.authors,
@@ -254,20 +225,13 @@ extension BookSearchViewController: UITableViewDataSource, UITableViewDelegate {
             )
         }
         
-        if let existingIndex = recentBooks.firstIndex(where: { $0.title == selectedBook.title }) {
-            recentBooks.remove(at: existingIndex)
-        }
-        recentBooks.insert(selectedBook, at: 0)
-        if recentBooks.count > 10 {
-            recentBooks.removeLast()
-        }
-        
-        RecentBooksStore.save(recentBooks)
+        viewModel.saveRecent(selectedBook) // 최근 본 책 저장 로직 이동 완료
         
         let detailVC = BookDetailViewController()
-        detailVC.book = selectedBook
+        detailVC.viewModel = BookDetailViewModel(book: selectedBook) // ViewModel 전달
         detailVC.modalPresentationStyle = .pageSheet
         present(detailVC, animated: true)
+
     }
 }
 
@@ -275,12 +239,12 @@ extension BookSearchViewController: UITableViewDataSource, UITableViewDelegate {
 extension BookSearchViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return recentBooks.count
+        return viewModel.recentBooks.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentBookCell.id, for: indexPath) as! RecentBookCell
-        cell.configure(with: recentBooks[indexPath.row])
+        cell.configure(with: viewModel.recentBooks[indexPath.row])
         return cell
     }
     
@@ -289,10 +253,12 @@ extension BookSearchViewController: UICollectionViewDataSource, UICollectionView
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedBook = recentBooks[indexPath.row]
+        let selectedBook = viewModel.recentBooks[indexPath.row]
         let detailVC = BookDetailViewController()
-        detailVC.book = selectedBook
+        detailVC.viewModel = BookDetailViewModel(book: selectedBook)
         detailVC.modalPresentationStyle = .pageSheet
         present(detailVC, animated: true)
     }
+
 }
+
