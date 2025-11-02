@@ -53,9 +53,33 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0C7E28042EB77F980052EFF8 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		0C7E28052EB77FAB0052EFF8 /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		0C7E28062EB77FB20052EFF8 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		0CD99AB62EAF9159001B6F3A = {
 			isa = PBXGroup;
 			children = (
+				0C7E28062EB77FB20052EFF8 /* ViewModel */,
+				0C7E28052EB77FAB0052EFF8 /* View */,
+				0C7E28042EB77F980052EFF8 /* Model */,
 				0C7E27612EB6D8040052EFF8 /* APIKeys.plist */,
 				0C7E27632EB6E3E60052EFF8 /* BookDataModel.xcdatamodeld */,
 				0CFBA35B2EB34E35004A50BB /* Secret.swift */,
