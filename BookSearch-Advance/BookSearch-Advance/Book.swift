@@ -10,7 +10,7 @@ import Foundation
 // 책 정보를 담는 데이터 모델
 import Foundation
 
-struct Book {
+struct Book: Codable, Equatable {
     let title: String
     let authors: [String]
     let contents: String
