@@ -26,7 +26,7 @@ struct BookDocument: Codable {
 class BookSearchViewController: UIViewController {
     
     // MARK: - UI 요소
-    private let searchBar: UISearchBar = {
+    let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.placeholder = "검색어를 입력하세요"
         return searchBar

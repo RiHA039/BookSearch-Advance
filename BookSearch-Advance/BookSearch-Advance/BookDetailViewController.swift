@@ -126,7 +126,7 @@ class BookDetailViewController: UIViewController {
                $0.height.equalTo(60)
            }
            
-           // 닫기 버튼 (비율 1:3)
+           // 닫기 버튼
            closeButton.snp.makeConstraints {
                $0.centerY.equalTo(saveButton)
                $0.trailing.equalTo(saveButton.snp.leading).offset(10)
@@ -177,7 +177,7 @@ class BookDetailViewController: UIViewController {
        // MARK: - 버튼 액션
        @objc private func saveBook() {
            guard let book = book else { return }
-           BookStorage.shared.addBook(book)
+           CoreDataManager.shared.addBook(book)
            dismiss(animated: true)
        }
        
