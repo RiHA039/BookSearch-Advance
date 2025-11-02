@@ -7,8 +7,7 @@
 
 import Foundation
 
-// 앱 내에서 선택한 책들을 임시로 저장하는 싱글톤 클래스
-// 추후 변경 예정 (CoreData)
+
 final class BookStorage {
     static let shared = BookStorage() // 전역에서 접근 가능
     private init() {}
